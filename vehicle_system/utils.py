@@ -24,7 +24,7 @@ def get_polygon_obj():
     return poly
 
 
-def check_polygon(start_time, end_time):
+def vehicle_list(start_time, end_time):
     try:
         poly = get_polygon_obj()
 
@@ -32,7 +32,7 @@ def check_polygon(start_time, end_time):
         et = datetime.fromtimestamp(int(end_time)).strftime("%Y-%m-%d %I:%M:%S")
 
         geo_objs = GeoData.objects.filter(time__gte=st, time__lte=et).select_related(
-                    'vehicle_license').distinct('vehicle_license')
+                   'vehicle_license').distinct('vehicle_license')
         if geo_objs:
             res = []
             for objs in geo_objs:
@@ -46,7 +46,7 @@ def check_polygon(start_time, end_time):
 
             return SuccessResponse(msg=Success.SUCCESS, results=res)
         else:
-            return ErrorResponse(msg=Error.LOCATION_NOT_EXIST)
+            return ErrorResponse(msg=Error.VEHICLE_NOT_EXIST)
 
     except Exception as e:
         logger.error(Error.EXCEPTION + str(e))

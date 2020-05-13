@@ -1,13 +1,12 @@
 import logging
 
-from vehicle_system.constant import Error
-from vehicle_system.response import ServerErrorResponse, ErrorResponse
-
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from vehicle_system.utils import check_polygon, get_vehicle_location
+from vehicle_system.constant import Error
+from vehicle_system.response import ServerErrorResponse, ErrorResponse
+from vehicle_system.utils import vehicle_list, get_vehicle_location
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +17,7 @@ def get_vehicle_list(request):
         start_time = request.query_params.get('start_tis', None)
         end_time = request.query_params.get('end_tis', None)
 
-        response = check_polygon(start_time, end_time)
+        response = vehicle_list(start_time, end_time)
 
         if not response:
             response = ErrorResponse(msg=Error.VEHICLE_FINDING_ERROR)
