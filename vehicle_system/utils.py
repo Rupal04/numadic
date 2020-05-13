@@ -8,7 +8,6 @@ from vehicle_system.response import SuccessResponse, ErrorResponse
 from vehicle_system.constant import Success, Error
 from shapely.geometry import Point, Polygon
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -32,7 +31,8 @@ def check_polygon(start_time, end_time):
         st = datetime.fromtimestamp(int(start_time)).strftime("%Y-%m-%d %I:%M:%S")
         et = datetime.fromtimestamp(int(end_time)).strftime("%Y-%m-%d %I:%M:%S")
 
-        geo_objs = GeoData.objects.filter(time__gte=st, time__lte=et).select_related('vehicle_license')
+        geo_objs = GeoData.objects.filter(time__gte=st, time__lte=et).select_related(
+                    'vehicle_license').distinct('vehicle_license')
         if geo_objs:
             res = []
             for objs in geo_objs:
@@ -40,11 +40,9 @@ def check_polygon(start_time, end_time):
                 longt = objs.longitude
                 if lat is not None and longt is not None:
                     p1 = Point(longt, lat)
-
                     if p1.within(poly):
                         serialized_obj = VehicleSerializer(objs.vehicle_license)
-                        if serialized_obj.data not in res:
-                            res.append(serialized_obj.data)
+                        res.append(serialized_obj.data)
 
             return SuccessResponse(msg=Success.SUCCESS, results=res)
         else:
